@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE FUSION | 极致融合</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #e0e0e0;
+            --accent: #eb5939;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+            cursor: none; /* 核心：隐藏系统鼠标 */
+        }
+
+        /* --- 1. 环境层 (背景 & 噪点 & 光标) --- */
+        
+        /* 动态极光背景 (固定在底层) */
+        .aurora-bg {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.3), transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(235, 89, 57, 0.15), transparent 50%);
+            filter: blur(80px);
+            animation: rotateBg 20s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 胶片噪点层 */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 900;
+            opacity: 0.05;
+            pointer-events: none;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        /* 智能光标 */
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.19, 1, 0.22, 1), 
+                        height 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+            mix-blend-mode: difference; /* 关键：遇白变黑，遇黑变白 */
+        }
+
+        /* 光标悬停状态 */
+        .cursor.hovered {
+            width: 80px;
+            height: 80px;
+            opacity: 0.5;
+        }
+
+        /* --- 2. 内容布局层 --- */
+
+        section {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 10vw;
+        }
+
+        .hero h1 {
+            font-size: 9vw;
+            line-height: 0.85;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin: 0;
+            opacity: 0; /* 初始隐藏，交给GSAP */
+            transform: translateY(50px);
+        }
+
+        /* 横向滚动区域 */
+        .horizontal-section {
+            height: 100vh;
+            background-color: #e0e0e0; /* 白色背景测试光标反色 */
+            color: #050505;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .horizontal-wrapper {
+            display: flex;
+            padding-left: 10vw;
+            white-space: nowrap;
+        }
+
+        .h-item {
+            width: 40vw;
+            height: 50vh;
+            margin-right: 5vw;
+            background-color: #050505;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+        }
+        
+        /* 视差画廊 */
+        .gallery {
+            min-height: 150vh; /* 拉长高度以展示视差 */
+            padding: 100px 10vw;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .img-card {
+            width: 40%;
+            height: 60vh;
+            margin-bottom: 100px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 图片遮罩效果 */
+        .img-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .img-card:hover .img-overlay {
+            background: rgba(0,0,0,0);
+        }
+
+        .p-text {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            color: var(--accent);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cursor" id="cursor"></div>
+    <div class="aurora-bg"></div>
+    <div class="noise"></div>
+
+    <section class="hero">
+        <h1 class="hero-title hover-target">Cinematic</h1>
+        <h1 class="hero-title hover-target">Web</h1>
+        <h1 class="hero-title hover-target" style="color: var(--accent);">Experience</h1>
+    </section>
+
+    <section class="horizontal-section">
+        <div class="horizontal-wrapper">
+            <div class="h-item hover-target">WORKS 01</div>
+            <div class="h-item hover-target">WORKS 02</div>
+            <div class="h-item hover-target">WORKS 03</div>
+            <div class="h-item hover-target">WORKS 04</div>
+        </div>
+    </section>
+
+    <section class="gallery">
+        <div class="img-card hover-target" data-speed="0.1" style="background-image: url('https://images.unsplash.com/photo-1492571350019-22de08371fd3?q=80&w=1000');">
+            <div class="img-overlay"></div>
+        </div>
+        <div class="p-text" data-speed="0.2">
+            <h3>DEPTH SCROLLING</h3>
+            <p>Elements move at different speeds.</p>
+        </div>
+
+        <div class="p-text" style="margin-top: 20vh;" data-speed="0.3">
+            <h3>INTERACTIVE</h3>
+            <p>Hover over images to see the cursor blend.</p>
+        </div>
+        <div class="img-card hover-target" data-speed="0.5" style="margin-top: 10vh; background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000');">
+            <div class="img-overlay"></div>
+        </div>
+    </section>
+
+    <section class="hero" style="height: 50vh; align-items: center; padding-left: 0;">
+        <h2 class="hover-target" style="font-size: 4vw;">THANKS FOR WATCHING</h2>
+    </section>
+
+    <script>
+        // --- 1. 初始化平滑滚动 (Lenis) ---
+        const lenis = new Lenis({
+            duration: 1.5, // 更加慵懒、沉稳的滚动感
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- 2. 初始化 GSAP ScrollTrigger ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // A. 英雄文字入场
+        gsap.to(".hero-title", {
+            y: 0,
+            opacity: 1,
+            duration: 1.5,
+            stagger: 0.2, // 依次出现
+            ease: "power4.out"
+        });
+
+        // B. 横向滚动 (钉住页面)
+        const hSection = document.querySelector(".horizontal-section");
+        const hWrapper = document.querySelector(".horizontal-wrapper");
+
+        gsap.to(hWrapper, {
+            x: () => -(hWrapper.scrollWidth - window.innerWidth),
+            ease: "none",
+            scrollTrigger: {
+                trigger: hSection,
+                pin: true,
+                scrub: 1,
+                start: "top top",
+                end: "+=2000", // 滚动长度
+                invalidateOnRefresh: true
+            }
+        });
+
+        // C. 视差效果 (Parallax)
+        // 查找所有带 data-speed 的元素，让它们滚动速度不同
+        document.querySelectorAll("[data-speed]").forEach(el => {
+            const speed = el.getAttribute("data-speed");
+            gsap.to(el, {
+                y: -150 * speed,
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top bottom", 
+                    end: "bottom top",
+                    scrub: 0
+                }
+            });
+        });
+
+        // --- 3. 光标交互逻辑 ---
+        const cursor = document.getElementById("cursor");
+        
+        // 光标跟随 (带一点 lerp 延迟，显得更有重量感)
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // 使用动画帧更新光标位置，实现平滑拖尾
+        function animateCursor() {
+            const dt = 0.15; // 追随速度系数，越小越慢
+            cursorX += (mouseX - cursorX) * dt;
+            cursorY += (mouseY - cursorY) * dt;
+            
+            cursor.style.left = `${cursorX}px`;
+            cursor.style.top = `${cursorY}px`;
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // 悬停检测：任何带 hover-target 类名的元素都会触发光标变大
+        const hoverTargets = document.querySelectorAll(".hover-target");
+        
+        hoverTargets.forEach(target => {
+            target.addEventListener("mouseenter", () => {
+                cursor.classList.add("hovered");
+            });
+            target.addEventListener("mouseleave", () => {
+                cursor.classList.remove("hovered");
+            });
+        });
+
+    </script>
+</body>
+</html>
