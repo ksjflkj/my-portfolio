@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE FUSION | 极致融合</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
     <style>
         :root {
-            --bg: #050505;
-            --text: #e0e0e0;
-            --accent: #eb5939;
+            --bg: #030303; /* 更深的纯黑底色 */
+            --text: #f0f0f0;
+            --accent: #ff4a1c; /* 更明亮的强调色 */
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Inter', sans-serif;
         }
 
         body, html {
@@ -21,26 +27,21 @@
             padding: 0;
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: var(--font-body);
             overflow-x: hidden;
-            cursor: none; /* 核心：隐藏系统鼠标 */
+            cursor: none; 
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- 1. 环境层 (背景 & 噪点 & 光标) --- */
-        
-        /* 动态极光背景 (固定在底层) */
+        /* --- 1. 环境层 --- */
         .aurora-bg {
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.3), transparent 60%),
-                        radial-gradient(circle at 80% 20%, rgba(235, 89, 57, 0.15), transparent 50%);
-            filter: blur(80px);
-            animation: rotateBg 20s linear infinite;
-            z-index: -1;
-            pointer-events: none;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15), transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 74, 28, 0.1), transparent 50%);
+            filter: blur(100px);
+            animation: rotateBg 30s linear infinite;
+            z-index: -1; pointer-events: none;
         }
 
         @keyframes rotateBg {
@@ -48,140 +49,78 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 胶片噪点层 */
         .noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 900;
-            opacity: 0.05;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 900; opacity: 0.04; pointer-events: none;
             background: url('https://grainy-gradients.vercel.app/noise.svg');
         }
 
-        /* 智能光标 */
+        /* 智能光标加强 */
         .cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 20px;
-            height: 20px;
-            background-color: #fff;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s cubic-bezier(0.19, 1, 0.22, 1), 
-                        height 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-            mix-blend-mode: difference; /* 关键：遇白变黑，遇黑变白 */
+            position: fixed; top: 0; left: 0; width: 15px; height: 15px;
+            background-color: #fff; border-radius: 50%; pointer-events: none;
+            z-index: 9999; transform: translate(-50%, -50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                        background-color 0.4s ease;
+            mix-blend-mode: difference;
         }
-
-        /* 光标悬停状态 */
-        .cursor.hovered {
-            width: 80px;
-            height: 80px;
-            opacity: 0.5;
-        }
+        .cursor.hovered { width: 100px; height: 100px; background-color: var(--accent); mix-blend-mode: normal; opacity: 0.9; mix-blend-mode: difference;}
 
         /* --- 2. 内容布局层 --- */
+        section { position: relative; z-index: 10; }
 
-        section {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Hero 区域 */
+        /* Hero 区域遮罩动画 */
         .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-left: 10vw;
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; padding-left: 8vw;
         }
-
+        .title-wrapper { overflow: hidden; line-height: 1.1; margin-bottom: -1vw; }
         .hero h1 {
-            font-size: 9vw;
-            line-height: 0.85;
-            text-transform: uppercase;
-            font-weight: 800;
-            margin: 0;
-            opacity: 0; /* 初始隐藏，交给GSAP */
-            transform: translateY(50px);
+            font-family: var(--font-display); font-size: 11vw;
+            text-transform: uppercase; font-weight: 800; margin: 0;
+            transform: translateY(100%); /* 初始在底端隐藏 */
+        }
+        .hero p {
+            font-size: 1.5rem; color: #888; margin-top: 2rem;
+            max-width: 400px; opacity: 0; transform: translateY(20px);
         }
 
-        /* 横向滚动区域 */
+        /* 横向滚动区域加强 */
         .horizontal-section {
-            height: 100vh;
-            background-color: #e0e0e0; /* 白色背景测试光标反色 */
-            color: #050505;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
+            height: 100vh; background-color: #0d0d0d; color: #fff;
+            display: flex; align-items: center; overflow: hidden;
         }
-
-        .horizontal-wrapper {
-            display: flex;
-            padding-left: 10vw;
-            white-space: nowrap;
-        }
-
+        .horizontal-wrapper { display: flex; padding-left: 10vw; white-space: nowrap; gap: 5vw;}
         .h-item {
-            width: 40vw;
-            height: 50vh;
-            margin-right: 5vw;
-            background-color: #050505;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            font-weight: bold;
-            flex-shrink: 0;
-            transition: transform 0.3s;
+            width: 45vw; height: 60vh; position: relative;
+            background-color: #1a1a1a; overflow: hidden; border-radius: 4px;
         }
+        .h-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(100%);
+        }
+        .h-item:hover img { transform: scale(1.05); filter: grayscale(0%); }
+        .h-item-title {
+            position: absolute; bottom: 30px; left: 30px;
+            font-family: var(--font-display); font-size: 3rem; margin: 0;
+            mix-blend-mode: difference;
+        }
+
+        /* 视差画廊加强 */
+        .gallery { min-height: 150vh; padding: 150px 10vw; display: flex; flex-wrap: wrap; justify-content: space-between; }
+        .img-card { width: 42%; height: 70vh; position: relative; overflow: hidden; border-radius: 4px; }
         
-        /* 视差画廊 */
-        .gallery {
-            min-height: 150vh; /* 拉长高度以展示视差 */
-            padding: 100px 10vw;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-start;
+        /* 关键：内部图片放大以便于产生滚动视差 */
+        .img-card-inner {
+            position: absolute; top: -10%; left: -10%; width: 120%; height: 120%;
+            background-size: cover; background-position: center;
         }
-
-        .img-card {
-            width: 40%;
-            height: 60vh;
-            margin-bottom: 100px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
-        }
+        .img-card:hover .img-card-inner { transform: scale(1.03); transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        /* 图片遮罩效果 */
-        .img-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            transition: 0.3s;
-        }
-
-        .img-card:hover .img-overlay {
-            background: rgba(0,0,0,0);
-        }
-
-        .p-text {
-            font-size: 1.2rem;
-            margin-top: 20px;
-            color: var(--accent);
-        }
+        .p-text { width: 30%; font-size: 1.2rem; margin-top: 20px; color: #888; }
+        .p-text h3 { font-family: var(--font-display); color: var(--text); font-size: 2rem; margin-bottom: 10px; }
 
     </style>
 </head>
@@ -192,135 +131,149 @@
     <div class="noise"></div>
 
     <section class="hero">
-        <h1 class="hero-title hover-target">Cinematic</h1>
-        <h1 class="hero-title hover-target">Web</h1>
-        <h1 class="hero-title hover-target" style="color: var(--accent);">Experience</h1>
+        <div class="title-wrapper"><h1 class="hero-title hover-target">Cinematic</h1></div>
+        <div class="title-wrapper"><h1 class="hero-title hover-target">Digital</h1></div>
+        <div class="title-wrapper"><h1 class="hero-title hover-target" style="color: var(--accent);">Experience.</h1></div>
+        <p class="hero-sub hover-target">We build immersive digital landscapes pushing the boundaries of the web.</p>
     </section>
 
     <section class="horizontal-section">
         <div class="horizontal-wrapper">
-            <div class="h-item hover-target">WORKS 01</div>
-            <div class="h-item hover-target">WORKS 02</div>
-            <div class="h-item hover-target">WORKS 03</div>
-            <div class="h-item hover-target">WORKS 04</div>
+            <div class="h-item hover-target">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000" alt="work1">
+                <h2 class="h-item-title">PROJECT 01</h2>
+            </div>
+            <div class="h-item hover-target">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000" alt="work2">
+                <h2 class="h-item-title">PROJECT 02</h2>
+            </div>
+            <div class="h-item hover-target">
+                <img src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1000" alt="work3">
+                <h2 class="h-item-title">PROJECT 03</h2>
+            </div>
         </div>
     </section>
 
     <section class="gallery">
-        <div class="img-card hover-target" data-speed="0.1" style="background-image: url('https://images.unsplash.com/photo-1492571350019-22de08371fd3?q=80&w=1000');">
-            <div class="img-overlay"></div>
+        <div class="img-card hover-target" data-speed="0.1">
+            <div class="img-card-inner parallax-img" style="background-image: url('https://images.unsplash.com/photo-1492571350019-22de08371fd3?q=80&w=1000');"></div>
         </div>
-        <div class="p-text" data-speed="0.2">
+        <div class="p-text" data-speed="0.25">
             <h3>DEPTH SCROLLING</h3>
-            <p>Elements move at different speeds.</p>
+            <p>Every element breathes. Notice how the image inside the card scrolls at a different rate than the page itself.</p>
         </div>
 
-        <div class="p-text" style="margin-top: 20vh;" data-speed="0.3">
+        <div class="p-text" style="margin-top: 30vh;" data-speed="0.35">
             <h3>INTERACTIVE</h3>
-            <p>Hover over images to see the cursor blend.</p>
+            <p>Fluid, physics-based cursor blending seamlessly with the dark environment.</p>
         </div>
-        <div class="img-card hover-target" data-speed="0.5" style="margin-top: 10vh; background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000');">
-            <div class="img-overlay"></div>
+        <div class="img-card hover-target" data-speed="0.6" style="margin-top: 15vh;">
+            <div class="img-card-inner parallax-img" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000');"></div>
         </div>
     </section>
 
-    <section class="hero" style="height: 50vh; align-items: center; padding-left: 0;">
-        <h2 class="hover-target" style="font-size: 4vw;">THANKS FOR WATCHING</h2>
+    <section class="hero" style="height: 60vh; align-items: center; padding-left: 0;">
+        <div class="title-wrapper"><h2 class="hero-title hover-target" style="font-size: 6vw;">THE END.</h2></div>
     </section>
 
     <script>
-        // --- 1. 初始化平滑滚动 (Lenis) ---
+        // 1. Lenis 平滑滚动
         const lenis = new Lenis({
-            duration: 1.5, // 更加慵懒、沉稳的滚动感
+            duration: 1.2, 
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smooth: true
         });
-
         function raf(time) {
             lenis.raf(time);
             requestAnimationFrame(raf);
         }
         requestAnimationFrame(raf);
 
-        // --- 2. 初始化 GSAP ScrollTrigger ---
+        // 2. GSAP 动画
         gsap.registerPlugin(ScrollTrigger);
 
-        // A. 英雄文字入场
+        // A. 遮罩切入式文字动画 (更高级的入场)
         gsap.to(".hero-title", {
-            y: 0,
-            opacity: 1,
-            duration: 1.5,
-            stagger: 0.2, // 依次出现
-            ease: "power4.out"
+            y: "0%",
+            duration: 1.2,
+            stagger: 0.15,
+            ease: "power4.out",
+            delay: 0.2
+        });
+        gsap.to(".hero-sub", {
+            opacity: 1, y: 0, duration: 1, ease: "power3.out", delay: 0.8
         });
 
-        // B. 横向滚动 (钉住页面)
+        // B. 横向滚动
         const hSection = document.querySelector(".horizontal-section");
         const hWrapper = document.querySelector(".horizontal-wrapper");
 
         gsap.to(hWrapper, {
-            x: () => -(hWrapper.scrollWidth - window.innerWidth),
+            x: () => -(hWrapper.scrollWidth - window.innerWidth + window.innerWidth * 0.1), // 留出一点右边距
             ease: "none",
             scrollTrigger: {
                 trigger: hSection,
                 pin: true,
                 scrub: 1,
                 start: "top top",
-                end: "+=2000", // 滚动长度
+                end: "+=2500", 
                 invalidateOnRefresh: true
             }
         });
 
-        // C. 视差效果 (Parallax)
-        // 查找所有带 data-speed 的元素，让它们滚动速度不同
+        // C. 外部容器视差
         document.querySelectorAll("[data-speed]").forEach(el => {
             const speed = el.getAttribute("data-speed");
             gsap.to(el, {
-                y: -150 * speed,
+                y: -200 * speed,
                 scrollTrigger: {
                     trigger: el,
                     start: "top bottom", 
                     end: "bottom top",
-                    scrub: 0
+                    scrub: true
                 }
             });
         });
 
-        // --- 3. 光标交互逻辑 ---
+        // D. 图片内部视差 (高级感核心)
+        document.querySelectorAll(".img-card").forEach(card => {
+            const innerImg = card.querySelector(".parallax-img");
+            gsap.to(innerImg, {
+                y: "15%", // 图片向下位移
+                ease: "none",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+        });
+
+        // 3. 增强版光标交互
         const cursor = document.getElementById("cursor");
-        
-        // 光标跟随 (带一点 lerp 延迟，显得更有重量感)
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
+        let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+        let cursorX = window.innerWidth/2, cursorY = window.innerHeight/2;
 
         document.addEventListener("mousemove", (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
 
-        // 使用动画帧更新光标位置，实现平滑拖尾
         function animateCursor() {
-            const dt = 0.15; // 追随速度系数，越小越慢
+            const dt = 0.2; // 稍微调快一点跟手度
             cursorX += (mouseX - cursorX) * dt;
             cursorY += (mouseY - cursorY) * dt;
             
             cursor.style.left = `${cursorX}px`;
             cursor.style.top = `${cursorY}px`;
-            
             requestAnimationFrame(animateCursor);
         }
         animateCursor();
 
-        // 悬停检测：任何带 hover-target 类名的元素都会触发光标变大
-        const hoverTargets = document.querySelectorAll(".hover-target");
-        
-        hoverTargets.forEach(target => {
-            target.addEventListener("mouseenter", () => {
-                cursor.classList.add("hovered");
-            });
-            target.addEventListener("mouseleave", () => {
-                cursor.classList.remove("hovered");
-            });
+        document.querySelectorAll(".hover-target").forEach(target => {
+            target.addEventListener("mouseenter", () => cursor.classList.add("hovered"));
+            target.addEventListener("mouseleave", () => cursor.classList.remove("hovered"));
         });
 
     </script>
