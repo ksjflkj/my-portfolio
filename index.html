@@ -70,20 +70,27 @@
         /* --- 2. 内容布局层 --- */
         section { position: relative; z-index: 10; }
 
-        /* Hero 区域遮罩动画 */
+/* 调整 Hero 区域边距 */
         .hero {
             height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; padding-left: 8vw;
+            justify-content: center; 
+            padding-left: 5vw; /* 稍微缩小左边距，给长单词让出空间 */
         }
-        .title-wrapper { overflow: hidden; line-height: 1.1; margin-bottom: -1vw; }
+        
+        /* 修复底部被裁切的问题 */
+        .title-wrapper { 
+            overflow: hidden; 
+            line-height: 1.2; /* 增大行高，让文字完整显示 */
+            padding-bottom: 1vw; /* 给遮罩底部增加一点内边距，彻底防止裁切 */
+        }
+        
+        /* 调整字号和间距 */
         .hero h1 {
-            font-family: var(--font-display); font-size: 11vw;
+            font-family: var(--font-display); 
+            font-size: 8.5vw; /* 将字号从 11vw 调小到 8.5vw，确保 EXPERIENCE 能在一行显示 */
+            letter-spacing: -0.02em; /* 稍微收紧一点字间距，更有现代设计的紧凑感 */
             text-transform: uppercase; font-weight: 800; margin: 0;
-            transform: translateY(100%); /* 初始在底端隐藏 */
-        }
-        .hero p {
-            font-size: 1.5rem; color: #888; margin-top: 2rem;
-            max-width: 400px; opacity: 0; transform: translateY(20px);
+            transform: translateY(110%); /* 将初始位移稍微加大到 110%，确保动画开始前文字完全隐藏在遮罩下 */
         }
 
         /* 横向滚动区域加强 */
